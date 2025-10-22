@@ -1,0 +1,83 @@
+[
+  {
+    "id": "reaver-vandal",
+    "name": "Vandal Reaver",
+    "price": 45.50,
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/60BCA009-4182-7998-DEE7-B8A2558DC369.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/reaver_vandal.png",
+    "desc": "La skin Reaver Vandal es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "champions-2025-vandal",
+    "name": "Vandal Champions 2025",
+    "price": 25.00,
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/E046854E-406C-37F4-6607-19A9BA8426FC.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/champions2025_vandal.png",
+    "desc": "La skin Champions 2025 Vandal es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "xenohunter-knife",
+    "name": "Xenohunter Knife",
+    "price": 70.00,
+    "Type": "Knife",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/411E4A55-4E59-7757-41F0-86A53F101BB5.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/xenohunter_knife.png",
+    "desc": "El Xenohunter Knife es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "prime-phantom",
+    "name": "Phantom Prime",
+    "price": 30.00,
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/60BCA009-4182-7998-DEE7-B8A2558DC369.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/prime_phantom.png",
+    "desc": "La skin Prime Phantom es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "reaver-operator",
+    "name": "Operator Reaver",
+    "price": 50.00,
+    "Type": "Sniper",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/60BCA009-4182-7998-DEE7-B8A2558DC369.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/reaver_operator.png",
+    "desc": "La skin Reaver Operator es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "prime-karambit",
+    "name": "Karambit Prime",
+    "price": 40.00,
+    "Type": "Knife",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/60BCA009-4182-7998-DEE7-B8A2558DC369.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/prime_karambit.png",
+    "desc": "La skin Karambit Prime es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "champions-2023-vandal",
+    "name": "Vandal Champions 2023",
+    "price": 20.00, 
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/E046854E-406C-37F4-6607-19A9BA8426FC.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/champions2023_vandal.png",
+    "desc": "La skin Champions 2023 Vandal es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "elderflame-vandal",
+    "name": "Vandal Elderflame",
+    "price": 60.00,
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/411E4A55-4E59-7757-41F0-86A53F101BB5.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/elderflame_vandal.png",
+    "desc": "La skin Elderflame Vandal es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  },
+  {
+    "id": "champions-2021-vandal",
+    "name": "Vandal Champions 2021",
+    "price": 15.00,
+    "Type": "Rifle",
+    "Category": "https://c-valorant-api.op.gg/Assets/ContentTiers/E046854E-406C-37F4-6607-19A9BA8426FC.svg",
+    "image": "app/src/main/java/am/gold/assets/valorant_skins/champions2021_vandal.png",
+    "desc": "La skin Champions 2021 Vandal es una adición impresionante a tu arsenal en Valorant. Con un diseño futurista y detalles vibrantes, esta skin no solo mejora la apariencia de tu arma, sino que también te brinda una experiencia única en el juego. Con detalles exclusivos y un diseño impresionante, es la elección perfecta para cualquier jugador serio."
+  }
+]

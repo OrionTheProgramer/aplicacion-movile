@@ -11,7 +11,9 @@ class SkinRepository(private val context: Context) {
     fun getSkins(): List<Skin> {
         val jsonString: String
         try {
-            jsonString = context.assets.open("skins.json").bufferedReader().use { it.readText() }
+            // Usamos 'applicationContext' por seguridad
+            jsonString = context.applicationContext.assets.open("skins.json")
+                .bufferedReader().use { it.readText() }
         } catch (ioException: IOException) {
             ioException.printStackTrace()
             return emptyList()
