@@ -21,7 +21,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     val userRole: StateFlow<String?> = _userRole
 
     init {
-
         checkLoginStatus()
     }
 
@@ -31,12 +30,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         _userRole.value = role
     }
 
-    // Llamar a esta función desde LoginScreen al tener éxito
-    fun login(role: String, token: String) { // Asume que recibes un token (aunque no lo usemos ahora)
+    fun login(role: String, token: String, username: String? = null) {
         viewModelScope.launch {
             with(sharedPreferences.edit()) {
                 putString("USER_ROLE", role)
-                putString("AUTH_TOKEN", token) // Guarda el token si lo necesitas
+                putString("AUTH_TOKEN", token)
+                username?.let { putString("USER_NAME", it) }
                 apply()
             }
             _isLoggedIn.value = true
@@ -44,12 +43,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Llamar a esta función desde el botón de Logout
     fun logout() {
         viewModelScope.launch {
             with(sharedPreferences.edit()) {
                 remove("USER_ROLE")
                 remove("AUTH_TOKEN")
+                remove("USER_NAME")
                 apply()
             }
             _isLoggedIn.value = false
@@ -58,7 +57,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-// Factory para AuthViewModel
 class AuthViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {

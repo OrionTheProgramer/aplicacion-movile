@@ -1,10 +1,13 @@
 package am.gold.Screens
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape // Import CircleShape
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,9 +20,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import am.gold.Navigation.AppScreens
 import am.gold.R
 import am.gold.ViewModel.AuthViewModel
 import am.gold.ViewModel.AuthViewModelFactory
@@ -38,6 +43,7 @@ fun SettingsScreen(navController: NavController) {
     val username by settingsViewModel.username.collectAsState()
     val receiveOffers by settingsViewModel.receiveOffers.collectAsState()
     val currentTheme by settingsViewModel.appTheme.collectAsState()
+    val pushNotificationsEnabled by settingsViewModel.pushNotificationsEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -59,10 +65,10 @@ fun SettingsScreen(navController: NavController) {
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_profile_placeholder), // Use your placeholder drawable
+                    painter = painterResource(id = R.drawable.ic_profile_placeholder),
                     contentDescription = "Foto de Perfil",
                     modifier = Modifier
                         .size(64.dp)
@@ -71,6 +77,14 @@ fun SettingsScreen(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(username, style = MaterialTheme.typography.headlineSmall)
+            }
+            TextButton(
+                onClick = { navController.navigate(AppScreens.EditProfileScreen.route) },
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
+            ) {
+                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Editar Perfil")
             }
 
             SettingItemDivider(title = "Preferencias")
@@ -81,17 +95,34 @@ fun SettingsScreen(navController: NavController) {
                 checked = receiveOffers,
                 onCheckedChange = { settingsViewModel.setReceiveOffers(it) }
             )
+            SettingSwitchItem(
+                text = "Activar notificaciones push",
+                icon = Icons.Default.Notifications,
+                checked = pushNotificationsEnabled,
+                onCheckedChange = { settingsViewModel.setPushNotificationsEnabled(it) }
+            )
 
             SettingItemDivider(title = "Apariencia")
-            SettingTextItem(
-                text = "Tema Actual: ${currentTheme.replaceFirstChar { it.uppercase() }}",
-                icon = if (currentTheme == "dark") Icons.Default.DarkMode else Icons.Default.LightMode
-            )
+            Column(Modifier.selectableGroup().padding(horizontal = 16.dp)) {
+                ThemeOptionRow(
+                    text = "Claro",
+                    selected = currentTheme == "light",
+                    onClick = { settingsViewModel.setAppTheme("light") }
+                )
+                ThemeOptionRow(
+                    text = "Oscuro",
+                    selected = currentTheme == "dark",
+                    onClick = { settingsViewModel.setAppTheme("dark") }
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { authViewModel.logout() },
+                onClick = {
+                    Log.d("SettingsScreen", "Logout button clicked!")
+                    authViewModel.logout()
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
             ) {
@@ -147,5 +178,31 @@ fun SettingTextItem(text: String, icon: ImageVector) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.width(16.dp))
         Text(text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+fun ThemeOptionRow(text: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton
+            )
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = null
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 }

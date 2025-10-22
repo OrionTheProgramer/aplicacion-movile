@@ -1,28 +1,39 @@
 package am.gold
 
+import am.gold.Navigation.AppNavigation
+import am.gold.ui.theme.GoldenRoseTheme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import am.gold.Navigation.AppNavigation
-import am.gold.ui.theme.GoldenRoseTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModelProvider
+import am.gold.ViewModel.SettingsViewModel
+import am.gold.ViewModel.SettingsViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        setContent {
-            GoldenRoseTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+        val settingsViewModel: SettingsViewModel by lazy {
+            ViewModelProvider(this, SettingsViewModelFactory(application)).get(SettingsViewModel::class.java)
+        }
 
+
+        setContent {
+            val currentThemeSetting by settingsViewModel.appTheme.collectAsState()
+
+            val useDarkTheme = when (currentThemeSetting) {
+                "dark" -> true
+                "light" -> false
+                else -> true
+            }
+
+            GoldenRoseTheme(darkTheme = useDarkTheme) {
+                Surface(/*...*/) {
                     AppNavigation()
                 }
             }

@@ -14,4 +14,5 @@ sealed class AppScreens(val route: String) {
     object ReceiptScreen : AppScreens("receipt_screen/{totalAmount}") {
         fun createRoute(total: Double) = "receipt_screen/$total"
     }
+    object EditProfileScreen : AppScreens("edit_profile_screen")
 }

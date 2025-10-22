@@ -5,13 +5,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import am.gold.ViewModel.AuthViewModel
-import am.gold.Navigation.AppScreens // Para volver a Login
+import am.gold.Navigation.AppScreens
 
 @Composable
 fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -23,19 +25,51 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
     ) {
         Text("Crear Cuenta", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Correo") })
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Nombre de Usuario") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Contraseña") })
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Correo Electrónico") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = { Text("Confirmar Contraseña") })
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirmar Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            // TODO: Validar campos y que contraseñas coincidan
-            // Llama a tu lógica de registro (podrías moverla al ViewModel)
-            // Si es exitoso:
-            authViewModel.login("client", "fake_token") // Simula login post-registro
-            // La navegación ocurre automáticamente
-        }) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val isValid = username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && password == confirmPassword
+                if (isValid) {
+                    authViewModel.login("client", "fake_token_post_register", username)
+                } else {
+                    // TODO: Show error message
+                }
+            }
+        ) {
             Text("Registrar")
         }
         Spacer(modifier = Modifier.height(8.dp))

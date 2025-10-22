@@ -57,6 +57,11 @@ fun AppNavigation() {
                 composable(AppScreens.SettingsScreen.route) {
                     SettingsScreen(navController = navController)
                 }
+
+                composable(AppScreens.EditProfileScreen.route) {
+                    EditProfileScreen(navController = navController)
+                }
+
                 composable(
                     route = AppScreens.ProductDetailScreen.route,
                     arguments = listOf(navArgument("skinId") { type = NavType.StringType })

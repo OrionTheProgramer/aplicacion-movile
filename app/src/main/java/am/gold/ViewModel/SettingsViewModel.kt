@@ -1,4 +1,3 @@
-// src/main/java/am/gold/ViewModel/SettingsViewModel.kt
 package am.gold.ViewModel
 
 import android.app.Application
@@ -15,30 +14,30 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private val sharedPreferences = application.getSharedPreferences("GoldenRosePrefs", Context.MODE_PRIVATE)
 
-    // --- Preferencias ---
     private val _username = MutableStateFlow<String>("")
     val username: StateFlow<String> = _username
 
     private val _receiveOffers = MutableStateFlow<Boolean>(false)
     val receiveOffers: StateFlow<Boolean> = _receiveOffers
 
-    // Estado inicial del tema (ej. 'dark' o 'light' o 'system')
-    private val _appTheme = MutableStateFlow<String>("dark") // Default a oscuro
+    private val _appTheme = MutableStateFlow<String>("dark")
     val appTheme: StateFlow<String> = _appTheme
+
+    private val _pushNotificationsEnabled = MutableStateFlow<Boolean>(false)
+    val pushNotificationsEnabled: StateFlow<Boolean> = _pushNotificationsEnabled
 
     init {
         loadSettings()
     }
 
     private fun loadSettings() {
-        _username.value = sharedPreferences.getString("USER_NAME", "Usuario Golden") ?: "Usuario Golden" // Default username
+        _username.value = sharedPreferences.getString("USER_NAME", "Usuario Golden") ?: "Usuario Golden"
         _receiveOffers.value = sharedPreferences.getBoolean("RECEIVE_OFFERS", false)
         _appTheme.value = sharedPreferences.getString("APP_THEME", "dark") ?: "dark"
+        _pushNotificationsEnabled.value = sharedPreferences.getBoolean("PUSH_NOTIFICATIONS", false)
     }
 
-    // --- Funciones para actualizar ---
     fun updateUsername(newName: String) {
-        // En una app real, esto iría a un backend
         _username.value = newName
         sharedPreferences.edit().putString("USER_NAME", newName).apply()
     }
@@ -48,16 +47,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         sharedPreferences.edit().putBoolean("RECEIVE_OFFERS", enabled).apply()
     }
 
-    fun setAppTheme(theme: String) { // theme can be "light", "dark", "system"
+    fun setAppTheme(theme: String) {
         _appTheme.value = theme
         sharedPreferences.edit().putString("APP_THEME", theme).apply()
-        // Aquí necesitarás una forma de que la UI principal reaccione a este cambio
-        // Puede ser un StateFlow global o pasar este estado hacia arriba.
-        // Por ahora, solo lo guardamos.
+    }
+
+    fun setPushNotificationsEnabled(enabled: Boolean) {
+        _pushNotificationsEnabled.value = enabled
+        sharedPreferences.edit().putBoolean("PUSH_NOTIFICATIONS", enabled).apply()
     }
 }
 
-// Factory para SettingsViewModel
 class SettingsViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
