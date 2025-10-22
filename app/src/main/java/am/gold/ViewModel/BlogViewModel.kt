@@ -1,22 +1,24 @@
 package am.gold.ViewModel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import am.gold.Model.BlogPost
 import am.gold.Repository.BlogRepository
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
 class BlogViewModel : ViewModel() {
 
     private val repository = BlogRepository()
-    private val _articulos = MutableLiveData<List<BlogPost>>()
-    val articulos: LiveData<List<BlogPost>> get() = _articulos
+
+    var articulos by mutableStateOf(listOf<BlogPost>())
+        private set
 
     init {
         cargarArticulos()
     }
-    private fun cargarArticulos() {
-        _articulos.value = repository.obtenerBlogPosts()
-    }
 
+    private fun cargarArticulos() {
+        articulos = repository.obtenerBlogPosts()
+    }
 }

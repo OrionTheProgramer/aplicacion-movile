@@ -1,10 +1,8 @@
 package am.gold.Model
 
-class BlogPost(
+data class BlogPost(
+    val id: Int,
     val titulo: String,
     val descripcion: String,
-    val imagenRes: Int
-) {
-
-
-}
+    val imagenPath: String
+)
