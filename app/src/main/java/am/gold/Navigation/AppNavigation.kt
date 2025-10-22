@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import am.gold.Screens.* // Importa tus pantallas
+import am.gold.Screens.*
 import am.gold.ViewModel.MarketplaceViewModel
 import am.gold.ViewModel.MarketplaceViewModelFactory
 import androidx.compose.material3.Text
@@ -50,8 +50,6 @@ fun AppNavigation() {
             }
         }
 
-        // --- Pantallas (Placeholder) ---
-        // Las definimos para que la app no crashee si navegas a ellas
         composable(AppScreens.LoginScreen.route) {
             Text("Pantalla de Login")
         }
