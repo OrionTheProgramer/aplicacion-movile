@@ -41,6 +41,10 @@ android {
 
 dependencies {
 
+    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("androidx.navigation:navigation-compose:2.8.0-beta01")
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
