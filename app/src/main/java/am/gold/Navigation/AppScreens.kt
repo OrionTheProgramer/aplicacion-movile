@@ -9,4 +9,9 @@ sealed class AppScreens(val route: String) {
     }
     object CartScreen : AppScreens("cart_screen")
     object BlogScreen : AppScreens("blog_screen")
+    object SettingsScreen : AppScreens("settings_screen")
+    object CheckoutScreen : AppScreens("checkout_screen")
+    object ReceiptScreen : AppScreens("receipt_screen/{totalAmount}") {
+        fun createRoute(total: Double) = "receipt_screen/$total"
+    }
 }

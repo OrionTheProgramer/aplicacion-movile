@@ -1,54 +1,49 @@
 package am.gold.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = ValorantRed,            // Color principal (botones, etc.)
+    secondary = GoldenAccent,         // Color secundario (acentos)
+    tertiary = GoldenAccent,          // Otro acento (puedes usar otro color)
+    background = DarkBackground,      // Fondo general
+    surface = DarkSurface,            // Fondo de tarjetas, barras
+    surfaceVariant = DarkSurface,     // Un tono ligeramente diferente si quieres
+    onPrimary = TextPrimary,          // Texto sobre botones primarios (rojos) -> Blanco
+    onSecondary = Color.Black,        // Texto sobre botones secundarios (dorados) -> Negro
+    onTertiary = Color.Black,         // Texto sobre botones terciarios (dorados) -> Negro
+    onBackground = TextPrimary,       // Texto sobre el fondo general -> Blanco
+    onSurface = TextPrimary,          // Texto sobre tarjetas/barras -> Blanco
+    onSurfaceVariant = TextSecondary, // Texto secundario/hints -> Gris claro
+    outline = BorderColor
+
 )
 
+// --- ESQUEMA CLARO (Déjalo como está por ahora o configúralo después) ---
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = ValorantRed,
+    secondary = GoldenAccent,
+    tertiary = GoldenAccent,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 @Composable
 fun GoldenRoseTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = true, // Fuerza el tema oscuro
+    dynamicColor: Boolean = true, // Desactiva colores dinámicos de Android 12+
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
 
     MaterialTheme(
         colorScheme = colorScheme,
