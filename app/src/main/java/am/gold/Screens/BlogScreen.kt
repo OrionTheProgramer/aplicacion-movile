@@ -9,7 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import am.gold.ViewModel.BlogViewModel
+import am.gold.screens.BlogCard
+import am.gold.viewmodel.BlogViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,9 @@ fun BlogScreen(navController: NavController, blogViewModel: BlogViewModel = view
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(articulos) { articulo ->
-                BlogCard(articulo)
+                BlogCard(articulo = articulo, onClick = {
+                    navController.navigate("blogDetail/${articulo.id}")
+                })
             }
         }
     }

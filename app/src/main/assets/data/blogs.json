@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "titulo": "Top 5 Skins de Phantom",
+    "descripcion": "Las mejores skins para Phantom en 2025.",
+    "imagenPath": "valorant_skins/prime_phantom.png"
+  },
+  {
+    "id": 2,
+    "titulo": "Domina la Operator",
+    "descripcion": "Guía rápida para eliminar más enemigos.",
+    "imagenPath": "valorant_skins/operator_prime.png"
+  },
+  {
+    "id": 3,
+    "titulo": "Nuevos lanzamientos",
+    "descripcion": "Todas las novedades de esta semana.",
+    "imagenPath": "valorant_skins/vandal_reaver.png"
+  }
+]
