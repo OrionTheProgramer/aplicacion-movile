@@ -2,24 +2,38 @@ package am.gold.Repository
 
 import android.content.Context
 import am.gold.Model.Skin
+import am.gold.Repository.ProductApiServiceMobile.catalogoApi
+import am.gold.Repository.ProductApiServiceMobile.productoApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
 
 class SkinRepository(private val context: Context) {
 
-    fun getSkins(): List<Skin> {
-        val jsonString: String
+    suspend fun getSkins(): List<Skin> = withContext(Dispatchers.IO) {
+        // Primero intenta microservicio de productos; fallback a catálogo; último recurso: assets
         try {
-
-            jsonString = context.applicationContext.assets.open("data/skins.json")
-                .bufferedReader().use { it.readText() }
-        } catch (ioException: IOException) {
-            ioException.printStackTrace()
-            return emptyList()
+            return@withContext productoApi.getProducts()
+        } catch (_: Exception) {
         }
+        try {
+            return@withContext catalogoApi.getProducts()
+        } catch (_: Exception) {
+        }
+        // Fallback assets local
+        return@withContext loadFromAssets()
+    }
 
-        val listSkinType = object : TypeToken<List<Skin>>() {}.type
-        return Gson().fromJson(jsonString, listSkinType)
+    private fun loadFromAssets(): List<Skin> {
+        return try {
+            val jsonString = context.applicationContext.assets.open("data/skins.json")
+                .bufferedReader().use { it.readText() }
+            val listSkinType = object : TypeToken<List<Skin>>() {}.type
+            Gson().fromJson(jsonString, listSkinType)
+        } catch (_: IOException) {
+            emptyList()
+        }
     }
 }

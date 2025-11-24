@@ -1,4 +1,4 @@
-package am.gold.Screens
+﻿package am.gold.Screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -64,9 +64,7 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
             onClick = {
                 val isValid = username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && password == confirmPassword
                 if (isValid) {
-                    authViewModel.login("client", "fake_token_post_register", username)
-                } else {
-                    // TODO: Show error message
+                    authViewModel.login("client", "token_post_register", username, email)
                 }
             }
         ) {

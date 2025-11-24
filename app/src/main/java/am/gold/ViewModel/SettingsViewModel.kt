@@ -17,6 +17,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _username = MutableStateFlow<String>("")
     val username: StateFlow<String> = _username
 
+    private val _email = MutableStateFlow<String>("")
+    val email: StateFlow<String> = _email
+
+    private val _bio = MutableStateFlow<String>("")
+    val bio: StateFlow<String> = _bio
+
+    private val _photoUri = MutableStateFlow<String?>(null)
+    val photoUri: StateFlow<String?> = _photoUri
+
     private val _receiveOffers = MutableStateFlow<Boolean>(false)
     val receiveOffers: StateFlow<Boolean> = _receiveOffers
 
@@ -32,6 +41,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private fun loadSettings() {
         _username.value = sharedPreferences.getString("USER_NAME", "Usuario Golden") ?: "Usuario Golden"
+        _email.value = sharedPreferences.getString("USER_EMAIL", "") ?: ""
+        _bio.value = sharedPreferences.getString("USER_BIO", "") ?: ""
+        _photoUri.value = sharedPreferences.getString("USER_PHOTO", null)
         _receiveOffers.value = sharedPreferences.getBoolean("RECEIVE_OFFERS", false)
         _appTheme.value = sharedPreferences.getString("APP_THEME", "dark") ?: "dark"
         _pushNotificationsEnabled.value = sharedPreferences.getBoolean("PUSH_NOTIFICATIONS", false)
@@ -40,6 +52,34 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun updateUsername(newName: String) {
         _username.value = newName
         sharedPreferences.edit().putString("USER_NAME", newName).apply()
+    }
+
+    fun updateEmail(newEmail: String) {
+        _email.value = newEmail
+        sharedPreferences.edit().putString("USER_EMAIL", newEmail).apply()
+    }
+
+    fun updateBio(newBio: String) {
+        _bio.value = newBio
+        sharedPreferences.edit().putString("USER_BIO", newBio).apply()
+    }
+
+    fun updatePhoto(uri: String?) {
+        _photoUri.value = uri
+        sharedPreferences.edit().putString("USER_PHOTO", uri).apply()
+    }
+
+    fun updateProfile(name: String, email: String, bio: String, photo: String?) {
+        _username.value = name
+        _email.value = email
+        _bio.value = bio
+        _photoUri.value = photo
+        sharedPreferences.edit()
+            .putString("USER_NAME", name)
+            .putString("USER_EMAIL", email)
+            .putString("USER_BIO", bio)
+            .putString("USER_PHOTO", photo)
+            .apply()
     }
 
     fun setReceiveOffers(enabled: Boolean) {

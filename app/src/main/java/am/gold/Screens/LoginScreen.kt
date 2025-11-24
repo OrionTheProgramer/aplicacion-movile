@@ -1,5 +1,6 @@
-package am.gold.Screens
+﻿package am.gold.Screens
 
+import am.gold.Navigation.AppScreens
 import am.gold.ViewModel.AuthViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,10 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import am.gold.Navigation.AppScreens
-
 
 @Composable
 fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
@@ -39,22 +39,23 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Correo Electrónico") }
+            label = { Text("Correo Electrónico") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Contraseña") },
-            // TODO: Añadir visual transformer para ocultar contraseña
+            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            // TODO: Validar email/password localmente
-            // Llama a tu lógica de verificación (podrías moverla al ViewModel)
-            // Si es exitoso:
-            authViewModel.login("client", "fake_token") // Simula login exitoso
-            // La navegación ocurre automáticamente por el cambio de estado en AppNavigation
+            if (email.isNotBlank() && password.isNotBlank()) {
+                val username = email.substringBefore("@")
+                authViewModel.login(role = "client", token = "token_local", username = username, email = email)
+            }
         }) {
             Text("Iniciar Sesión")
         }

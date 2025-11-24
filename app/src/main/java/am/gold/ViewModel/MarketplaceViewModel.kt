@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import am.gold.Model.Skin
 import am.gold.Repository.SkinRepository
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 class MarketplaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = SkinRepository(application)
@@ -24,6 +26,12 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun loadSkins() {
+        viewModelScope.launch {
+            _skins.value = repository.getSkins()
+        }
+    }
+
+    suspend fun refresh() {
         _skins.value = repository.getSkins()
     }
 
