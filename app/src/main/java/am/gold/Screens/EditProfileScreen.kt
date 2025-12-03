@@ -77,7 +77,7 @@ fun EditProfileScreen(navController: NavController) {
             OutlinedTextField(
                 value = bioState.value,
                 onValueChange = { bioState.value = it },
-                label = { Text("Descripción") },
+                label = { Text("Descripcion") },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 3
             )

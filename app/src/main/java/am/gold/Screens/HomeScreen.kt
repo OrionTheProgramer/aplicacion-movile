@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) { // Añadimos NavController
+fun HomeScreen(navController: NavController) { // Anadimos NavController
     Scaffold(topBar = { TopAppBar(title = { Text("Inicio Golden Rose") }) }) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
             Text("Pantalla Principal (Home)")

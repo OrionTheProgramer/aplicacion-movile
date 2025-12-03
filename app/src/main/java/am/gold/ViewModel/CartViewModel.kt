@@ -7,6 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import am.gold.Model.Skin
+import am.gold.Model.CartItemPayload
+import am.gold.Model.CreateOrderRequest
+import am.gold.Model.PaymentRequest
+import am.gold.Repository.OrderRepository
+import am.gold.Repository.PaymentRepository
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -14,16 +19,28 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-// Añade 'quantity' al modelo Skin o crea un nuevo 'CartItem' data class
+// Anade 'quantity' al modelo Skin o crea un nuevo 'CartItem' data class
 data class CartItem(val skin: Skin, var quantity: Int)
+
+sealed class CheckoutState {
+    object Idle : CheckoutState()
+    object Loading : CheckoutState()
+    data class Success(val orderId: String?, val paymentId: String?, val paymentLink: String?) : CheckoutState()
+    data class Error(val message: String) : CheckoutState()
+}
 
 class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     private val sharedPreferences = application.getSharedPreferences("GoldenRosePrefs", Context.MODE_PRIVATE)
     private val gson = Gson()
+    private val orderRepository = OrderRepository()
+    private val paymentRepository = PaymentRepository()
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     val cartItems: StateFlow<List<CartItem>> = _cartItems
+
+    private val _checkoutState = MutableStateFlow<CheckoutState>(CheckoutState.Idle)
+    val checkoutState: StateFlow<CheckoutState> = _checkoutState
 
     init {
         loadCart()
@@ -66,7 +83,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
     fun clearCart() {
         viewModelScope.launch {
             _cartItems.value = emptyList()
-            saveCart() // Guarda el carrito vacío
+            saveCart() // Guarda el carrito vacio
             Log.d("CartViewModel", "clearCart: Carrito limpiado.")
         }
     }
@@ -89,6 +106,54 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                 saveCart()
             }
         }
+    }
+
+    fun checkout(total: Double, userId: String?, token: String?) {
+        viewModelScope.launch {
+            if (_cartItems.value.isEmpty()) return@launch
+            if (token.isNullOrBlank()) {
+                _checkoutState.value = CheckoutState.Error("Necesitas iniciar sesion para pagar.")
+                return@launch
+            }
+            _checkoutState.value = CheckoutState.Loading
+
+            try {
+                val payload = _cartItems.value.map {
+                    CartItemPayload(
+                        productoId = it.skin.id,
+                        cantidad = it.quantity,
+                        precioUnitario = it.skin.price
+                    )
+                }
+                val orderRequest = CreateOrderRequest(
+                    usuarioId = userId,
+                    items = payload,
+                    total = total
+                )
+                val orderResponse = orderRepository.createOrder(orderRequest, token)
+
+                val paymentResponse = paymentRepository.createPayment(
+                    request = PaymentRequest(
+                        ordenId = orderResponse.id ?: "orden_local",
+                        monto = total
+                    ),
+                    token = token
+                )
+
+                _checkoutState.value = CheckoutState.Success(
+                    orderId = orderResponse.id,
+                    paymentId = paymentResponse.id,
+                    paymentLink = paymentResponse.enlacePago
+                )
+                clearCart()
+            } catch (e: Exception) {
+                _checkoutState.value = CheckoutState.Error("No pudimos procesar tu compra: ${e.message}")
+            }
+        }
+    }
+
+    fun resetCheckoutState() {
+        _checkoutState.value = CheckoutState.Idle
     }
 }
 

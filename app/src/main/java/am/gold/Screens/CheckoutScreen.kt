@@ -1,63 +1,92 @@
 package am.gold.Screens
 
-import android.app.Application
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn // Si la lista puede ser larga
-import androidx.compose.foundation.lazy.items // Si la lista puede ser larga
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import am.gold.Navigation.AppScreens // Para navegar a Receipt
-import am.gold.ViewModel.* // Importa CartViewModel y Factory
+import am.gold.Navigation.AppScreens
+import am.gold.ViewModel.AuthViewModel
+import am.gold.ViewModel.CartViewModel
+import am.gold.ViewModel.CheckoutState
+import am.gold.ui.components.GoldenRoseScreen
+import am.gold.ui.components.GoldenSurfaceCard
+import am.gold.ui.components.PrimaryButton
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckoutScreen(navController: NavController) {
-    // Obtén el ViewModel del Carrito
-    val context = LocalContext.current
-    val factory = CartViewModelFactory(context.applicationContext as Application)
-    val cartViewModel: CartViewModel = viewModel(factory = factory)
-    val cartItems by cartViewModel.cartItems.collectAsState()
+fun CheckoutScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel,
+    authViewModel: AuthViewModel
+) {
 
-    // Calcula totales (igual que en CartScreen)
+    val cartItems by cartViewModel.cartItems.collectAsState()
+    val checkoutState by cartViewModel.checkoutState.collectAsState()
+    val userId by authViewModel.userId.collectAsState()
+    val token by authViewModel.authToken.collectAsState()
+
     val subtotal = cartItems.sumOf { it.skin.price * it.quantity }
     val commission = if (subtotal > 0) subtotal * 0.05 else 0.0
-    val shipping = if (subtotal > 0) 1490.0 else 0.0 // Asegúrate que sea Double
+    val shipping = if (subtotal > 0) 1490.0 else 0.0
     val total = subtotal + commission + shipping
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Confirmar Compra") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) { // Botón para volver al carrito
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            Text("Resumen del Pedido", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(16.dp))
+    val snackbarHostState = remember { SnackbarHostState() }
 
-            // Lista de items (simplificada)
-            LazyColumn(modifier = Modifier.weight(1f)) { // Ocupa espacio disponible
+    LaunchedEffect(checkoutState) {
+        when (checkoutState) {
+            is CheckoutState.Error -> {
+                val message = (checkoutState as CheckoutState.Error).message
+                snackbarHostState.showSnackbar(message)
+                cartViewModel.resetCheckoutState()
+            }
+            is CheckoutState.Success -> {
+                cartViewModel.resetCheckoutState()
+                navController.navigate(AppScreens.ReceiptScreen.createRoute(total)) {
+                    popUpTo(AppScreens.MarketplaceScreen.route)
+                }
+            }
+            else -> Unit
+        }
+    }
+
+    GoldenRoseScreen(
+        title = "Confirmar compra",
+        subtitle = "Procesamos la orden contra microservicios de ordenes/pagos",
+        onBack = { navController.popBackStack() },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) {
+        GoldenSurfaceCard(
+            title = "Resumen del pedido",
+            supportingText = "Revisa que todo este correcto antes de pagar."
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
                 items(cartItems) { item ->
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("${item.skin.name} (x${item.quantity})")
@@ -65,57 +94,54 @@ fun CheckoutScreen(navController: NavController) {
                     }
                 }
             }
-
-            // Totales
             Divider(modifier = Modifier.padding(vertical = 8.dp))
-            SummaryRow("Subtotal:", subtotal)
-            SummaryRow("Envío:", shipping)
-            SummaryRow("Comisión:", commission)
+            SummaryRow("Subtotal", subtotal)
+            SummaryRow("Envio", shipping)
+            SummaryRow("Comision", commission)
             Divider(modifier = Modifier.padding(vertical = 8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total:", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-                Text("$${total.formatPrice()}", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text("Total", style = androidx.compose.material3.MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    "$${total.formatPrice()}",
+                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                )
             }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Botón de Pagar (Simulado)
-            Button(
-                onClick = {
-                    // Acción de "pago":
-                    // 1. Limpia el carrito
-                    cartViewModel.clearCart() // Necesitas crear esta función en CartViewModel
-                    // 2. Navega a la pantalla de recibo (pasando el total o ID de orden)
-                    navController.navigate(AppScreens.ReceiptScreen.createRoute(total)) {
-                        // Limpia el stack hasta Marketplace para que no pueda volver a Checkout
-                        popUpTo(AppScreens.MarketplaceScreen.route)
-                    }
+            Spacer(modifier = Modifier.height(12.dp))
+            PrimaryButton(
+                text = when (checkoutState) {
+                    CheckoutState.Loading -> "Procesando..."
+                    else -> "Pagar y generar orden"
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = cartItems.isNotEmpty() // Deshabilita si el carrito está vacío
+                enabled = cartItems.isNotEmpty() && checkoutState != CheckoutState.Loading && token != null
             ) {
-                Text("Pagar")
+                cartViewModel.checkout(total, userId, token)
+            }
+            if (token == null) {
+                Text(
+                    "Debes iniciar sesion para enviar la orden al backend.",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                )
             }
         }
     }
 }
 
-// Helper para formato de precio
-fun Double.formatPrice(): String {
-    // TODO: Implementar formato de moneda chilena si es necesario
-    return String.format("%.0f", this) // Formato simple sin decimales
-}
+private fun Double.formatPrice(): String = String.format("%.0f", this)
 
-// Helper para filas de resumen
 @Composable
-fun SummaryRow(label: String, value: Double) {
+private fun SummaryRow(label: String, value: Double) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("$${value.formatPrice()}", style = MaterialTheme.typography.bodyMedium)
+        Text(label, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
+        Text("$${value.formatPrice()}", style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
     }
 }

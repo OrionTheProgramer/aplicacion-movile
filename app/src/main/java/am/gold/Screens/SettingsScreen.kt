@@ -1,17 +1,32 @@
-﻿package am.gold.Screens
+package am.gold.Screens
 
 import android.app.Application
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,9 +46,11 @@ import am.gold.ViewModel.AuthViewModel
 import am.gold.ViewModel.AuthViewModelFactory
 import am.gold.ViewModel.SettingsViewModel
 import am.gold.ViewModel.SettingsViewModelFactory
+import am.gold.ui.components.GoldenRoseScreen
+import am.gold.ui.components.GoldenSurfaceCard
+import am.gold.ui.components.PrimaryButton
 import coil.compose.AsyncImage
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
 
@@ -50,75 +67,69 @@ fun SettingsScreen(navController: NavController) {
     val currentTheme by settingsViewModel.appTheme.collectAsState()
     val pushNotificationsEnabled by settingsViewModel.pushNotificationsEnabled.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Ajustes") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-    ) { paddingValues ->
+    GoldenRoseScreen(
+        title = "Ajustes",
+        subtitle = "Preferencias y cuenta"
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                AsyncImage(
-                    model = photoUri ?: R.drawable.ic_profile_placeholder,
-                    contentDescription = "Foto de Perfil",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(username.ifBlank { "Usuario" }, style = MaterialTheme.typography.headlineSmall)
-                    if (email.isNotBlank()) {
-                        Text(email, style = MaterialTheme.typography.bodyMedium)
+            GoldenSurfaceCard {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    AsyncImage(
+                        model = photoUri ?: R.drawable.ic_profile_placeholder,
+                        contentDescription = "Foto de Perfil",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(username.ifBlank { "Usuario" }, style = MaterialTheme.typography.headlineSmall)
+                        if (email.isNotBlank()) {
+                            Text(email, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        if (bio.isNotBlank()) {
+                            Text(bio, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
                 }
-            }
-            if (bio.isNotBlank()) {
-                Text(bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp))
-            }
-            TextButton(
-                onClick = { navController.navigate(AppScreens.EditProfileScreen.route) },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 16.dp)
-            ) {
-                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Editar Perfil")
+                TextButton(
+                    onClick = { navController.navigate(AppScreens.EditProfileScreen.route) },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Editar perfil")
+                }
             }
 
             SettingItemDivider(title = "Preferencias")
 
-            SettingSwitchItem(
-                text = "Recibir ofertas por correo",
-                icon = Icons.Default.Email,
-                checked = receiveOffers,
-                onCheckedChange = { settingsViewModel.setReceiveOffers(it) }
-            )
-            SettingSwitchItem(
-                text = "Activar notificaciones push",
-                icon = Icons.Default.Notifications,
-                checked = pushNotificationsEnabled,
-                onCheckedChange = { settingsViewModel.setPushNotificationsEnabled(it) }
-            )
+            GoldenSurfaceCard {
+                SettingSwitchItem(
+                    text = "Recibir ofertas por correo",
+                    icon = Icons.Default.Email,
+                    checked = receiveOffers,
+                    onCheckedChange = { settingsViewModel.setReceiveOffers(it) }
+                )
+                SettingSwitchItem(
+                    text = "Activar notificaciones push",
+                    icon = Icons.Default.Notifications,
+                    checked = pushNotificationsEnabled,
+                    onCheckedChange = { settingsViewModel.setPushNotificationsEnabled(it) }
+                )
+            }
 
             SettingItemDivider(title = "Apariencia")
-            Column(Modifier.padding(horizontal = 16.dp)) {
+            GoldenSurfaceCard {
                 ThemeOptionRow(
                     text = "Claro",
                     selected = currentTheme == "light",
@@ -131,29 +142,25 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = { authViewModel.logout() },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-            ) {
-                Icon(Icons.Filled.ExitToApp, contentDescription = null)
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Cerrar Sesión")
-            }
+            PrimaryButton(
+                text = "Cerrar sesion",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                onClick = { authViewModel.logout() }
+            )
         }
     }
 }
 
 @Composable
 fun SettingItemDivider(title: String) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
+            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
         )
         Divider()
     }
@@ -169,11 +176,11 @@ fun SettingSwitchItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp),
+            .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(text, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
@@ -190,7 +197,7 @@ fun ThemeOptionRow(text: String, selected: Boolean, onClick: () -> Unit) {
                 onClick = onClick,
                 role = Role.RadioButton
             )
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(

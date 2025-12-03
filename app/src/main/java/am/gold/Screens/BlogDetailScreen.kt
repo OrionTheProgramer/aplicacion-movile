@@ -26,7 +26,7 @@ fun BlogDetailScreen(blogId: Int?, navController: NavController, blogViewModel: 
             title = { Text("Detalle de la Noticia") },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Atras")
                 }
             }
         ) }

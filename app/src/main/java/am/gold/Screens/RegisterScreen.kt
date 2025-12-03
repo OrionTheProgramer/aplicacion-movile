@@ -1,15 +1,41 @@
-﻿package am.gold.Screens
+package am.gold.Screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import am.gold.Navigation.AppScreens
+import am.gold.ViewModel.AuthViewModel
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import am.gold.ViewModel.AuthViewModel
-import am.gold.Navigation.AppScreens
+import am.gold.ui.components.GoldenRoseScreen
+import am.gold.ui.components.GoldenSurfaceCard
+import am.gold.ui.components.PrimaryButton
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
@@ -18,61 +44,80 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    val uiState by authViewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { message ->
+            scope.launch {
+                snackbarHostState.showSnackbar(message)
+                authViewModel.clearError()
+            }
+        }
+    }
+
+    GoldenRoseScreen(
+        title = "Crear cuenta",
+        subtitle = "Conecta con el ecosistema Golden Rose",
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        Text("Crear Cuenta", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Nombre de Usuario") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo Electrónico") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirmar Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                val isValid = username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && password == confirmPassword
-                if (isValid) {
-                    authViewModel.login("client", "token_post_register", username, email)
+        Spacer(modifier = Modifier.height(12.dp))
+        GoldenSurfaceCard(
+            title = "Registrarse",
+            supportingText = "Los datos se envian al microservicio de autenticacion/usuarios."
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Nombre de usuario") },
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Filled.Badge, contentDescription = null) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo Electronico") },
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
+                    keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contrasena") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirmar contrasena") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                PrimaryButton(
+                    text = if (uiState.isLoading) "Registrando..." else "Crear cuenta",
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = username.isNotBlank() && email.isNotBlank() &&
+                        password.isNotBlank() && password == confirmPassword && !uiState.isLoading
+                ) {
+                    authViewModel.register(username.trim(), email.trim(), password.trim())
+                }
+                TextButton(
+                    onClick = { navController.navigate(AppScreens.LoginScreen.route) },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text("Ya tengo cuenta")
                 }
             }
-        ) {
-            Text("Registrar")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextButton(onClick = { navController.navigate(AppScreens.LoginScreen.route) }) {
-            Text("¿Ya tienes cuenta? Inicia Sesión")
         }
     }
 }

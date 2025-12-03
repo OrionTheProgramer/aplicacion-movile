@@ -42,11 +42,11 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        // Evita acumular historial si vuelves a presionar el mismo ítem
+                        // Evita acumular historial si vuelves a presionar el mismo item
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
-                        // Evita crear múltiples instancias de la misma pantalla
+                        // Evita crear multiples instancias de la misma pantalla
                         launchSingleTop = true
                         // Restaura el estado al volver
                         restoreState = true

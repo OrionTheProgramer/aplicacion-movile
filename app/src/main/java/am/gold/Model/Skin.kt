@@ -20,7 +20,7 @@ data class Skin(
     @SerializedName("hasImageData")
     val hasImageData: Boolean = false,
 
-    // Descripción
+    // Descripcion
     @SerializedName("descripcion")
     val desc: String? = null,
 
@@ -32,4 +32,3 @@ data class Skin(
     @SerializedName("image")
     val image: String? = null
 )
-

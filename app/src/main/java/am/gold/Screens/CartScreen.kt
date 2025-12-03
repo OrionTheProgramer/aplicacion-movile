@@ -1,20 +1,38 @@
 package am.gold.Screens
 
 import am.gold.Navigation.AppScreens
-import am.gold.ViewModel.*
-import androidx.compose.foundation.layout.*
+import am.gold.ViewModel.CartItem
+import am.gold.ViewModel.CartViewModel
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import am.gold.ui.components.GoldenRoseScreen
+import am.gold.ui.components.GoldenSurfaceCard
+import am.gold.ui.components.PrimaryButton
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(navController: NavController, cartViewModel: CartViewModel) {
 
@@ -24,108 +42,112 @@ fun CartScreen(navController: NavController, cartViewModel: CartViewModel) {
     val shipping = if (subtotal > 0) 1490.0 else 0.0
     val total = subtotal + commission + shipping
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Carrito de Compras") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-    ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-            if (cartItems.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Tu carrito está vacío", style = MaterialTheme.typography.titleMedium)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { navController.navigate(AppScreens.MarketplaceScreen.route){ popUpTo(AppScreens.MarketplaceScreen.route){ inclusive = true } } }) {
-                            Text("Ir al Mercado")
-                        }
-                    }
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f), // Ocupa el espacio disponible
-                    verticalArrangement = Arrangement.spacedBy(12.dp) // Espacio entre items
+    GoldenRoseScreen(
+        title = "Tu carrito",
+        subtitle = "Revisa y ajusta antes de pagar"
+    ) {
+        if (cartItems.isEmpty()) {
+            GoldenSurfaceCard(
+                title = "Carrito vacio",
+                supportingText = "Agrega skins desde el marketplace."
+            ) {
+                PrimaryButton(
+                    text = "Ir al Marketplace",
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(cartItems) { item ->
-                        CartItemRow(item = item, viewModel = cartViewModel)
+                    navController.navigate(AppScreens.MarketplaceScreen.route) {
+                        popUpTo(AppScreens.MarketplaceScreen.route) { inclusive = true }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Divider()
-                Spacer(modifier = Modifier.height(8.dp))
-                SummaryRow("Subtotal:", subtotal)
-                SummaryRow("Envío:", shipping)
-                SummaryRow("Comisión:", commission)
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider()
-                Spacer(modifier = Modifier.height(8.dp))
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f, fill = false),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(cartItems) { item ->
+                    CartItemRow(item = item, viewModel = cartViewModel)
+                }
+            }
+
+            GoldenSurfaceCard(
+                title = "Resumen",
+                supportingText = "Valores incluyen comision de servicio y envio."
+            ) {
+                SummaryRow("Subtotal", subtotal)
+                SummaryRow("Envio", shipping)
+                SummaryRow("Comision", commission)
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Total:", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text("$${total.formatPrice()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(
+                        "$${total.formatPrice()}",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { navController.navigate(AppScreens.CheckoutScreen.route) },
+                Spacer(modifier = Modifier.height(12.dp))
+                PrimaryButton(
+                    text = "Continuar",
                     modifier = Modifier.fillMaxWidth(),
                     enabled = cartItems.isNotEmpty()
                 ) {
-                    Text("Continuar Compra")
+                    navController.navigate(AppScreens.CheckoutScreen.route)
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
+    GoldenSurfaceCard(
+        title = item.skin.name,
+        supportingText = "Cantidad: ${item.quantity}"
+    ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                Text(item.skin.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                Text("Cantidad: ${item.quantity}", style = MaterialTheme.typography.bodyMedium)
-                Text("Subtotal: $${(item.skin.price * item.quantity).formatPrice()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    "Subtotal: $${(item.skin.price * item.quantity).formatPrice()}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
             }
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedButton(
                     onClick = { viewModel.updateQuantity(item.skin.id, item.quantity - 1) },
                     modifier = Modifier.size(40.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    enabled = item.quantity > 1 // Deshabilita si la cantidad es 1
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                    enabled = item.quantity > 1
                 ) {
                     Text("-")
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("${item.quantity}", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "${item.quantity}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
                 OutlinedButton(
                     onClick = { viewModel.updateQuantity(item.skin.id, item.quantity + 1) },
                     modifier = Modifier.size(40.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    // Podrías añadir un límite máximo si quieres
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
                 ) {
                     Text("+")
                 }
-                Spacer(modifier = Modifier.width(16.dp))
                 IconButton(
                     onClick = { viewModel.removeFromCart(item.skin.id) },
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                        imageVector = Icons.Default.Delete,
                         contentDescription = "Eliminar",
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -134,3 +156,16 @@ fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
         }
     }
 }
+
+@Composable
+private fun SummaryRow(label: String, value: Double) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("$${value.formatPrice()}", style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+private fun Double.formatPrice(): String = String.format("%.0f", this)

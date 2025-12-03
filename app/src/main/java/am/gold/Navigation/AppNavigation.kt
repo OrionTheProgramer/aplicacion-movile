@@ -75,11 +75,15 @@ fun AppNavigation() {
                             skinId = skinId
                         )
                     } else {
-                        Text("Error: ID de skin no válido.")
+                        Text("Error: ID de skin no valido.")
                     }
                 }
                 composable(AppScreens.CheckoutScreen.route) {
-                    CheckoutScreen(navController = navController)
+                    CheckoutScreen(
+                        navController = navController,
+                        cartViewModel = cartViewModel,
+                        authViewModel = authViewModel
+                    )
                 }
                 composable(
                     route = AppScreens.ReceiptScreen.route,

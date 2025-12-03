@@ -1,4 +1,4 @@
-package am.gold.navigation  // recuerda que los paquetes deben ir en minúsculas
+package am.gold.navigation  // los paquetes deben ir en minusculas
 
 import am.gold.Screens.BlogDetailScreen
 import androidx.compose.runtime.Composable

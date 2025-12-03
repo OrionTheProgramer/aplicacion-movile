@@ -10,16 +10,21 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
 class MarketplaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = SkinRepository(application)
     private val _skins = MutableStateFlow<List<Skin>>(emptyList())
     val skins: StateFlow<List<Skin>> = _skins
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
-
 
     init {
         loadSkins()
@@ -27,12 +32,27 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun loadSkins() {
         viewModelScope.launch {
-            _skins.value = repository.getSkins()
+            _isLoading.value = true
+            _error.value = null
+            try {
+                _skins.value = repository.getSkins()
+            } catch (e: Exception) {
+                _error.value = "No pudimos cargar el catalogo: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
     suspend fun refresh() {
-        _skins.value = repository.getSkins()
+        try {
+            _isLoading.value = true
+            _skins.value = repository.getSkins()
+        } catch (e: Exception) {
+            _error.value = "No pudimos actualizar el catalogo: ${e.message}"
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     fun onSearchQueryChange(query: String) {
@@ -44,9 +64,7 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
     }
 }
 
-
-// --- FÁBRICA DEL VIEWMODEL ---
-// Esto es necesario para poder pasar el 'Application' al ViewModel
+// --- FABRICA DEL VIEWMODEL ---
 class MarketplaceViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MarketplaceViewModel::class.java)) {

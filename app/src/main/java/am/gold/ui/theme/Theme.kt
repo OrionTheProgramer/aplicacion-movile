@@ -8,42 +8,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = ValorantRed,            // Color principal (botones, etc.)
-    secondary = GoldenAccent,         // Color secundario (acentos)
-    tertiary = GoldenAccent,          // Otro acento (puedes usar otro color)
-    background = DarkBackground,      // Fondo general
-    surface = DarkSurface,            // Fondo de tarjetas, barras
-    surfaceVariant = DarkSurface,     // Un tono ligeramente diferente si quieres
-    onPrimary = TextPrimary,          // Texto sobre botones primarios (rojos) -> Blanco
-    onSecondary = Color.Black,        // Texto sobre botones secundarios (dorados) -> Negro
-    onTertiary = Color.Black,         // Texto sobre botones terciarios (dorados) -> Negro
-    onBackground = TextPrimary,       // Texto sobre el fondo general -> Blanco
-    onSurface = TextPrimary,          // Texto sobre tarjetas/barras -> Blanco
-    onSurfaceVariant = TextSecondary, // Texto secundario/hints -> Gris claro
+    primary = ValorantRed,
+    secondary = GoldenAccent,
+    tertiary = GoldenAccent,
+    background = DarkBackground,
+    surface = DarkSurface,
+    surfaceVariant = DarkSurface,
+    onPrimary = TextPrimary,
+    onSecondary = Color.Black,
+    onTertiary = Color.Black,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextSecondary,
     outline = BorderColor
-
 )
 
-// --- ESQUEMA CLARO (Déjalo como está por ahora o configúralo después) ---
+// Paleta clara de referencia; se puede ajustar mas adelante.
 private val LightColorScheme = lightColorScheme(
     primary = ValorantRed,
     secondary = GoldenAccent,
     tertiary = GoldenAccent,
-
 )
 
 @Composable
 fun GoldenRoseTheme(
-    darkTheme: Boolean = true, // Fuerza el tema oscuro
-    dynamicColor: Boolean = true, // Desactiva colores dinámicos de Android 12+
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

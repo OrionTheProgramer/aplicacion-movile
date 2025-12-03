@@ -13,7 +13,7 @@ import java.io.IOException
 class SkinRepository(private val context: Context) {
 
     suspend fun getSkins(): List<Skin> = withContext(Dispatchers.IO) {
-        // Primero intenta microservicio de productos; fallback a catálogo; último recurso: assets
+        // Primero intenta microservicio de productos; luego catalogo; ultimo recurso: assets locales
         try {
             return@withContext productoApi.getProducts()
         } catch (_: Exception) {
@@ -22,7 +22,6 @@ class SkinRepository(private val context: Context) {
             return@withContext catalogoApi.getProducts()
         } catch (_: Exception) {
         }
-        // Fallback assets local
         return@withContext loadFromAssets()
     }
 
