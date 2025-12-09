@@ -161,7 +161,7 @@ fun SkinCard(skin: Skin, onSkinClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
 
-                val tierInfo = getTierInfoFromUrl(skin.Category ?: skin.categoryName)
+                val tierInfo = getTierInfoFromUrl(skin.Category ?: skin.categoryName ?: "")
                 Spacer(modifier = Modifier.height(6.dp))
                 PillBadge(text = tierInfo.name)
             }

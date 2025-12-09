@@ -22,8 +22,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -90,7 +88,7 @@ fun ProductDetailScreen(
                     contentScale = ContentScale.Fit
                 )
 
-                val tierInfo = getTierInfoFromUrl(skin.Category ?: skin.categoryName)
+                val tierInfo = getTierInfoFromUrl(skin.Category ?: skin.categoryName ?: "")
                 PillBadge(text = tierInfo.name, modifier = Modifier.align(Alignment.Start))
 
                 Text(
@@ -144,7 +142,9 @@ private fun TextButtonSecondary(
         onClick = onClick,
         modifier = modifier
     ) {
-        Icon(Icons.Filled.ArrowBack, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+        Icon(Icons.Filled.ArrowBack,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 8.dp))
         Text(text)
     }
 }

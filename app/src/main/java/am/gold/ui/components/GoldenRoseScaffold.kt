@@ -18,6 +18,7 @@ import am.gold.ui.theme.DarkBackground
 import am.gold.ui.theme.DarkSurface
 import am.gold.ui.theme.GoldenAccent
 import am.gold.ui.theme.ValorantRed
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,3 +185,33 @@ fun PillBadge(text: String, modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GoldenRoseScreenFullPreview() {
+    GoldenRoseScreen(
+        title = "Marketplace",
+        subtitle = "Claves de skins listas para usar",
+        onBack = {}
+        ,
+        actions = {
+            Text("Acción", color = MaterialTheme.colorScheme.primary)
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Text("+")
+            }
+        }) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Item 1")
+            Text("Item 2")
+            Text("Item 3")
+        }
+    }
+}
+
+
+
+
+
+
